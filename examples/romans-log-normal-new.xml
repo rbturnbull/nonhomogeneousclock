@@ -565,7 +565,9 @@ dataType="standard">
         <parameter id="reproductiveNumber_BDSKY_Serial.t:Romans" spec="parameter.RealParameter" dimension="10" lower="0.0" name="stateNode" upper="Infinity">2.0</parameter>
         <parameter id="samplingProportion_BDSKY_Serial.t:Romans" spec="parameter.RealParameter" lower="0.0" name="stateNode" upper="1.0">0.01</parameter>
         <parameter id="ucldMean.c:Romans" spec="parameter.RealParameter" name="stateNode">1.0</parameter>
-        <parameter id="nonhomogeneousClockScaleFactor" spec="parameter.RealParameter" name="stateNode">1250</parameter>
+        <parameter id="nonhomogeneousClockScaleFactor" spec="parameter.RealParameter" name="stateNode">2</parameter>
+        <parameter id="nonhomogeneousClockGrowthFactor" spec="parameter.RealParameter" name="stateNode">500</parameter>
+        <parameter id="nonhomogeneousClockMiddle" spec="parameter.RealParameter" name="stateNode">600</parameter>
         
         <parameter id="ucldStdev.c:Romans" spec="parameter.RealParameter" lower="0.0" name="stateNode">0.001</parameter>
         <stateNode id="rateCategories.c:Romans" spec="parameter.IntegerParameter" dimension="76">1</stateNode>
@@ -605,7 +607,13 @@ dataType="standard">
                 <Uniform id="Uniform.6" name="distr" upper="Infinity"/>
             </prior>
             <prior id="nonhomogeneousClockScaleFactorPrior" name="distribution" x="@nonhomogeneousClockScaleFactor">
-                <Uniform id="Uniform.7" name="distr" lower="1.0" upper="10000.0"/>
+                <Uniform id="Uniform.7" name="distr" lower="0.0" upper="20.0"/>
+            </prior>
+            <prior id="nonhomogeneousClockGrowthFactorPrior" name="distribution" x="@nonhomogeneousClockGrowthFactor">
+                <Uniform id="nonhomogeneousClockGrowthFactorPrior.Uniform" name="distr" lower="1" upper="1000.0"/>
+            </prior>
+            <prior id="nonhomogeneousClockMiddlePrior" name="distribution" x="@nonhomogeneousClockMiddle">
+                <Uniform id="nonhomogeneousClockGrowthMiddle.Uniform" name="distr" lower="0" upper="1250.0"/>
             </prior>
             <prior id="ucldStdevPrior.c:Romans" name="distribution" x="@ucldStdev.c:Romans">
                 <Uniform id="ucldStdevPriorDistribution" name="distr" lower="0.00001" upper="0.01"/>
@@ -624,7 +632,7 @@ dataType="standard">
                     <parameter id="gammaShape.s:Romans2" spec="parameter.RealParameter" estimate="false" name="shape">1.0</parameter>
                     <substModel id="LewisMK.s:Romans2" spec="LewisMK" datatype="@morphDataType.Romans2"/>
                 </siteModel>
-                <branchRateModel id="RelaxedClock.c:Romans" spec="beast.evolution.branchratemodel.NonHomogeneousClockModel" clock.rate="@ucldMean.c:Romans" rateCategories="@rateCategories.c:Romans" tree="@Tree.t:Romans" scaleFactor="@nonhomogeneousClockScaleFactor">
+                <branchRateModel id="RelaxedClock.c:Romans" spec="beast.evolution.branchratemodel.NonHomogeneousClockModel" clock.rate="@ucldMean.c:Romans" rateCategories="@rateCategories.c:Romans" tree="@Tree.t:Romans" scaleFactor="@nonhomogeneousClockScaleFactor" growthFactor="@nonhomogeneousClockGrowthFactor" middle="@nonhomogeneousClockMiddle">
                     <LogNormal id="LogNormalDistributionModel.c:Romans" S="@ucldStdev.c:Romans" meanInRealSpace="true" name="distr">
                         <parameter id="RealParameter.38" spec="parameter.RealParameter" estimate="false" lower="0.0" name="M" upper="1.0">1.0</parameter>
                     </LogNormal>
@@ -720,6 +728,8 @@ filter="401,476">
     <operator id="becomeUninfectiousRateScaler_BDSKY_Serial.t:Romans" spec="ScaleOperator" parameter="@becomeUninfectiousRate_BDSKY_Serial.t:Romans" weight="2.0"/>
 
     <operator id="nonhomogeneousClockScaleFactorOperator" spec="ScaleOperator" parameter="@nonhomogeneousClockScaleFactor" weight="1.0"/>
+    <operator id="nonhomogeneousClockGrowthFactorOperator" spec="ScaleOperator" parameter="@nonhomogeneousClockGrowthFactor" weight="1.0"/>
+    <operator id="nonhomogeneousClockMiddleOperator" spec="ScaleOperator" parameter="@nonhomogeneousClockMiddle" weight="1.0"/>
 
     <operator id="reproductiveNumberScaler_BDSKY_Serial.t:Romans" spec="ScaleOperator" parameter="@reproductiveNumber_BDSKY_Serial.t:Romans" weight="10.0"/>
 
@@ -766,6 +776,8 @@ filter="401,476">
         <log idref="ucldMean.c:Romans"/>
         <log idref="ucldStdev.c:Romans"/>
         <log idref="nonhomogeneousClockScaleFactor"/>
+        <log idref="nonhomogeneousClockGrowthFactor"/>
+        <log idref="nonhomogeneousClockMiddle"/>
         
         <log id="rate.c:Romans" spec="beast.evolution.branchratemodel.RateStatistic" branchratemodel="@RelaxedClock.c:Romans" tree="@Tree.t:Romans"/>
     </logger>
